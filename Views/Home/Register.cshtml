@@ -1,0 +1,10 @@
+﻿@model kuaforBerberOtomasyon.Models.DTO.RegisterViewModel
+
+<h1>Kayıt Ol</h1>
+<form asp-action="Register" asp-controller="Home" method="post">
+    <input type="text" name="FirstName" placeholder="Ad" required />
+    <input type="text" name="LastName" placeholder="Soyad" required />
+    <input type="email" name="Email" placeholder="E-posta" required />
+    <input type="password" name="Password" placeholder="Şifre" required />
+    <button type="submit">Kaydol</button>
+</form>

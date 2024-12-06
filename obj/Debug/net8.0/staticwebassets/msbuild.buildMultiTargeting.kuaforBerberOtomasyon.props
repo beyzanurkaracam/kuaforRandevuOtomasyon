@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\kuaforBerberOtomasyon.props" />
+</Project>

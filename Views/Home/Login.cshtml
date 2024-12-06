@@ -1,0 +1,9 @@
+﻿@model kuaforBerberOtomasyon.Models.DTO.LoginViewModel
+
+<h1>Giriş Yap</h1>
+<form asp-action="Login" asp-controller="Home" method="post">
+    <input type="email" name="Email" placeholder="E-posta" required />
+    <input type="password" name="Password" placeholder="Şifre" required />
+    <button type="submit">Giriş Yap</button>
+</form>
+<p>@TempData["LoginError"]</p>

@@ -1,0 +1,38 @@
+﻿@model kuaforBerberOtomasyon.Models.DTO.AdminServiceRequest
+@{
+    Layout = "~/Views/Shared/AdminLayout.cshtml";
+}
+@{
+    ViewData["Title"] = "Servis Ekle";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Yeni Servis Ekle</h2>
+
+    <!-- Hata mesajları için doğrulama özeti -->
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <!-- Servis ekleme formu -->
+    <form asp-controller="Admin"  asp-action="AddService" method="post">
+        <div class="form-group mb-3">
+            <label asp-for="Name" class="form-label">Servis Adı</label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Duration" class="form-label">Süre (Dakika)</label>
+            <input asp-for="Duration" class="form-control" type="number" min="1" />
+            <span asp-validation-for="Duration" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Price" class="form-label">Fiyat</label>
+            <input asp-for="Price" class="form-control" type="number" step="0.01" />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Servis Ekle</button>
+    </form>
+</div>
+
