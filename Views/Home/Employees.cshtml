@@ -1,0 +1,26 @@
+﻿@using kuaforBerberOtomasyon.Models.DTO
+@model List<EmployeeRespond>
+
+
+<table class="table">
+    <thead class="thead-light">
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Ad Soyad</th>
+            <th scope="col">Verdiği Hizmet</th>
+           
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.EmployeeId</td>
+                <td>@item.EmployeeName</td>
+                <td>@item.ServiceName</td>
+               
+
+            </tr>
+        }
+    </tbody>
+</table>

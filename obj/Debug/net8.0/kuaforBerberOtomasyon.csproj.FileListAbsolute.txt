@@ -137,4 +137,5 @@ C:\Users\BEYZANUR\source\repos\kuaforBerberOtomasyon\kuaforBerberOtomasyon\obj\D
 C:\Users\BEYZANUR\source\repos\kuaforBerberOtomasyon\kuaforBerberOtomasyon\obj\Debug\net8.0\ref\kuaforBerberOtomasyon.dll
 C:\Users\BEYZANUR\source\repos\kuaforBerberOtomasyon\kuaforBerberOtomasyon\bin\Debug\net8.0\BCrypt.Net-Next.dll
 C:\Users\BEYZANUR\source\repos\kuaforBerberOtomasyon\kuaforBerberOtomasyon\obj\Debug\net8.0\scopedcss\Views\Shared\AdminLayout.cshtml.rz.scp.css
+C:\Users\BEYZANUR\source\repos\kuaforBerberOtomasyon\kuaforBerberOtomasyon\obj\Debug\net8.0\kuaforBerberOtomasyon.sourcelink.json
 C:\Users\BEYZANUR\source\repos\kuaforBerberOtomasyon\kuaforBerberOtomasyon\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

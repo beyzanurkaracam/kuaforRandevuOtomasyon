@@ -123,25 +123,25 @@ namespace kuaforBerberOtomasyon.Controllers
         {
             if (AdminControl())
             {
-                var emploees = _context.Employees.ToList();
-                var services = _context.Services.ToList();
+                var employees = _context.Employees.ToList();
+                
 
-                var serviceModelList = new List<EmployeeServiceRespond>();
+                var employeeList = new List<EmployeeRespond>();
 
-                foreach (var employee in emploees)
+                foreach (var employee in employees)
                 {
-                    var hizmetler = services.FirstOrDefault(abd => abd.ServiceID == employee.ServiceID);
-
-                    var employeeAndService = new EmployeeServiceRespond
+                    
+                    var employeeler= new EmployeeRespond
                     {
-                        DocName = employee.Name,
-                        ServiceName = hizmetler?.Name
+                        EmployeeId= employee.EmployeeID,
+                        EmployeeName = employee.Name,
+                        ServiceName = employee.ServiceName
                     };
 
-                    serviceModelList.Add(employeeAndService);
+                    employeeList.Add(employeeler);
                 }
 
-                return View(serviceModelList);
+                return View(employeeList);
             }
             else
             {
@@ -149,8 +149,9 @@ namespace kuaforBerberOtomasyon.Controllers
             }
         }
         [HttpGet]
-        public IActionResult DoktorEkle()
+        public IActionResult AddEmployee()
         {
+           
             if (AdminControl())
             {
                 var serviceList = _context.Services.Select(h => new SelectListItem
@@ -167,23 +168,38 @@ namespace kuaforBerberOtomasyon.Controllers
             }
         }
         [HttpPost]
-        public IActionResult DoktorEkle(IFormCollection form)
+        public IActionResult AddEmployee(AdminEmployeeRequest request)
         {
-            // Form verilerini almak için FormCollection nesnesini kullanımı
-
-            string name = form["Name"];
-            int selectedServiceId = Convert.ToInt32(form["id"]);
-            var newEmployee = new Employee
+            if (ModelState.IsValid) // Gelen verilerin doğruluğunu kontrol eder
             {
-                Name = name,
-                ServiceID = selectedServiceId,
-                CreatedAt = DateTime.Now.ToUniversalTime() // UTC'ye dönüştürülür
-            };
+                // Servisin daha önce veritabanına eklenip eklenmediğini kontrol et
+                var existingEmployee = _context.Employees
+                    .FirstOrDefault(s => s.EmployeeID == request.EmployeeID); // İsimle arama yapabilirsiniz, isteğe bağlı olarak başka parametrelerle de kontrol edilebilir.
 
-            _context.Employees.Add(newEmployee); // Yeni servisi ekle
-            _context.SaveChanges(); // Değişiklikleri kaydet
+                if (existingEmployee != null)
+                {
+                    // Eğer servis zaten varsa, kullanıcıya mesaj gösterin veya başka bir işlem yapın
+                    ModelState.AddModelError("", "Bu çalışan zaten mevcut.");
+                    return View(request); // Hata mesajı ile formu tekrar gösterir
+                }
+
+                // Servis yeni ise, yeni bir servis oluşturup veritabanına ekleyin
+                var yeniEmployee = new Employee
+                {
+                    Name = request.Name,
+                    EmployeeID= request.EmployeeID, 
+                    ServiceName = request.ServiceName,
+                    CreatedAt = DateTime.Now.ToUniversalTime()
+                };
+
+                _context.Employees.Add(yeniEmployee); // Yeni servisi ekle
+                _context.SaveChanges(); // Değişiklikleri kaydet
+
+                return RedirectToAction("Doktor", "Admin");
+            }
+
+            return View(); // Eğer model geçerli değilse tekrar formu gösterir
            
-            return RedirectToAction("Doktor", "Admin");
         }
         public IActionResult DeleteService(int Id)
         {

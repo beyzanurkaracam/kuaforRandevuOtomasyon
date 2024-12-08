@@ -165,44 +165,30 @@ namespace kuaforBerberOtomasyon.Controllers
 
          return View(serviceModelList);
          }
-        public IActionResult EmployeesAndServices(int serviceId)
+        public IActionResult Employees()
         {
-            _logger.LogInformation("EmployeesAndServices metodu çaðrýldý. ServiceID: {ServiceId}", serviceId);
+            
+                var employees = _context.Employees.ToList();
 
-            var employees = _context.Employees.ToList();
-            var services = _context.Services.ToList();
 
-            _logger.LogInformation("Employees tablosundan {EmployeeCount} kayýt alýndý.", employees.Count);
-            _logger.LogInformation("Services tablosundan {ServiceCount} kayýt alýndý.", services.Count);
+                var employeeList = new List<EmployeeRespond>();
 
-            var employeesAndServices = employees.Where(d => services.Any(p => p.ServiceID == serviceId)).ToList();
-            _logger.LogInformation("{EmployeeServiceCount} çalýþan ve servis eþleþti.", employeesAndServices.Count);
-
-            var serviceModelList = new List<EmployeeServiceRespond>();
-
-            foreach (var employee in employeesAndServices)
-            {
-                var servicess = services.FirstOrDefault(abd => abd.ServiceID == employee.ServiceID);
-                if (servicess != null)
+                foreach (var employee in employees)
                 {
-                    _logger.LogDebug("Çalýþan {EmployeeName} için {ServiceName} servisi bulundu.", employee.Name, servicess.Name);
-                }
-                else
-                {
-                    _logger.LogWarning("Çalýþan {EmployeeName} için servis bulunamadý.", employee.Name);
+
+                    var employeeler = new EmployeeRespond
+                    {
+                        EmployeeId = employee.EmployeeID,
+                        EmployeeName = employee.Name,
+                        ServiceName = employee.ServiceName
+                    };
+
+                    employeeList.Add(employeeler);
                 }
 
-                var calisanVeServis = new EmployeeServiceRespond
-                {
-                    DocName = employee.Name,
-                    ServiceName = servicess?.Name
-                };
-
-                serviceModelList.Add(calisanVeServis);
-            }
-
-            _logger.LogInformation("Toplamda {ServiceModelCount} model döndürülecek.", serviceModelList.Count);
-            return View(serviceModelList);
+                return View(employeeList);
+            
+           
         }
 
         // Çýkýþ iþlemi
