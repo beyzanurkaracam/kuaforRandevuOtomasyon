@@ -10,14 +10,17 @@
         <div class="col-md-6">
             <div class="mb-3">
                 <label for="service" class="form-label">Hizmet Seç</label>
-                @Html.DropDownList("id", Model.Item1, "-- Seçiniz --", new { @class = "form-control" })
+                @Html.DropDownList("id", Model.Item1, "-- Seçiniz --", new { @class = "form-control", onchange = "updateServiceId()" })
             </div>
+            <!-- Hizmet ID'sini saklayacak hidden input -->
+            <input type="hidden" id="selectedServiceId" name="selectedServiceId" value="" />
             <div class="d-flex justify-content-center">
                 <button type="submit" class="btn btn-primary">Hizmet Seç</button>
             </div>
         </div>
     </div>
 }
+
 @if (Model.Item2 != null && Model.Item2.Count > 0)
 {
     <div class="row justify-content-center mt-3">
@@ -28,7 +31,8 @@
                 <div class="card text-center mb-2">
                     <div class="card-body">
                         <h5 class="card-title">@employee.Text</h5>
-                        <a class="btn btn-primary" asp-controller="Home" asp-action="SelectEmployee" asp-route-id="@employee.Value">Seç</a>
+                        <!-- Çalışan seçildiğinde hizmet ID'si ile birlikte gönderiliyor -->
+                        <a class="btn btn-primary" asp-controller="Home" asp-action="SelectEmployee" asp-route-id="@employee.Value" asp-route-serviceId="@ViewData["selectedServiceId"]">Seç</a>
                     </div>
                 </div>
             }
@@ -42,4 +46,13 @@ else
             <p>Bu hizmet için uygun çalışan bulunmamaktadır.</p>
         </div>
     </div>
+}
+
+@section Scripts {
+    <script>
+        function updateServiceId() {
+            var selectedServiceId = document.getElementById("id").value;
+            document.getElementById("selectedServiceId").value = selectedServiceId;
+        }
+    </script>
 }

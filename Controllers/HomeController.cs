@@ -6,6 +6,7 @@ using kuaforBerberOtomasyon.Models;
 using kuaforBerberOtomasyon.Models.DTO;
 using kuaforBerberOtomasyon.Models.Entities;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -100,7 +101,6 @@ namespace kuaforBerberOtomasyon.Controllers
             return View();
         }
 
-        // Giriþ iþlemi
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> LoginAsync(LoginViewModel model, string returnUrl = null)
@@ -117,15 +117,17 @@ namespace kuaforBerberOtomasyon.Controllers
 
                     var claims = new List<Claim>
             {
-
+                new Claim(ClaimTypes.Name, user.Email), // Burada Name claim ekleniyor
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Role, user.Role)
             };
 
-                    var identity = new ClaimsIdentity(claims, "Login");
+                    var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     var principal = new ClaimsPrincipal(identity);
 
-                    await HttpContext.SignInAsync(principal);
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+                    _logger.LogInformation("Kullanýcý Claims: {Claims}", string.Join(", ", principal.Claims.Select(c => $"{c.Type}: {c.Value}")));
 
                     if (user.Role == "admin")
                     {
@@ -146,6 +148,7 @@ namespace kuaforBerberOtomasyon.Controllers
 
             return View(model);
         }
+
         public IActionResult Services()
          {
               var services = _context.Services.ToList();
@@ -275,62 +278,178 @@ namespace kuaforBerberOtomasyon.Controllers
         }
 
         [HttpGet]
-        public IActionResult SelectEmployee(int Id)
+        public IActionResult SelectEmployee(int serviceId)
         {
-            var employeeCalisma = _context.WorkingHours
-                .Where(x => x.EmployeeId == Id)
-                .ToList();
+            _logger.LogInformation("SelectEmployee action called with serviceId: {serviceId}", serviceId);
 
-            if (employeeCalisma == null || employeeCalisma.Count == 0)
+            try
             {
-                ViewBag.Mesaj = "Çalýþanýn uygun randevusu bulunamadý.";
-                return View();
-            }
+                var services = _context.Services.ToList();
+                var employees = _context.Employees.ToList();
 
-            var model = new Tuple<List<WorkingHours>, int>(employeeCalisma, Id);
-            return View(model);
+                _logger.LogInformation("Fetched {serviceCount} services and {employeeCount} employees from the database.", services.Count, employees.Count);
+
+                var serviceSelectList = services.Select(s => new SelectListItem
+                {
+                    Text = s.Name,
+                    Value = s.ServiceID.ToString()
+                }).ToList();
+
+                var employeeSelectList = employees.Select(e => new SelectListItem
+                {
+                    Text = e.Name,
+                    Value = e.EmployeeID.ToString()
+                }).ToList();
+
+                var model = new Tuple<List<SelectListItem>, List<SelectListItem>>(serviceSelectList, employeeSelectList);
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred in SelectEmployee action.");
+                return StatusCode(500, "Internal server error.");
+            }
         }
 
-
-        // idsine göre gelen doktoru bulan döndüren metod 
         public Employee getEmployeeValue(int Id)
         {
-            var appointedEmployee = _context.Employees.Where(x => x.EmployeeID == Id).FirstOrDefault();
-            return appointedEmployee;
+            _logger.LogInformation("getEmployeeValue called with Id: {Id}", Id);
+
+            try
+            {
+                var employee = _context.Employees.FirstOrDefault(x => x.EmployeeID == Id);
+                if (employee == null)
+                {
+                    _logger.LogWarning("No employee found with Id: {Id}", Id);
+                }
+                else
+                {
+                    _logger.LogInformation("Employee found: {employeeName}", employee.Name);
+                }
+
+                return employee;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred in getEmployeeValue.");
+                throw;
+            }
         }
         [HttpPost]
-        public IActionResult CreateAppointment(int employeeId, string selectedCardDate)
+        public IActionResult CreateAppointment(int employeeId, DateTime? selectedCardDate, int serviceId)
         {
-            var currentUser = _context.User.FirstOrDefault(u => u.FirstName == User.Identity.Name);
+            _logger.LogInformation("CreateAppointment action called with employeeId: {employeeId}, selectedCardDate: {selectedCardDate}, serviceId: {serviceId}", employeeId, selectedCardDate, serviceId);
+            _logger.LogInformation("User.Identity.Name value: {Email}", User.Identity.Name);
 
-            //randevu alýnan doktoru idsine göre bul
-            var randevuAlinanCalisan = getEmployeeValue(employeeId);
-
-            //randevu saatini al
-            DateTime randevuSaati = DateTime.ParseExact(selectedCardDate, "yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
-
-            //Doktorun id si ve çalýþma saati veritabanýnda varsa yani böyle bir doktor varsa bunu deðiþkene ata çünk randevu alýnca bunu kaldýrmamýz gerekecek.
-            var calismaSaatiniBul = _context.WorkingHours.ToList().Where(x => x.EmployeeId == employeeId && x.WorkingHour == randevuSaati).FirstOrDefault();
-
-
-            var yeniRandevu = new Appointment
+            try
             {
-                UserId = currentUser.UserID,
-                FirstName = currentUser.FirstName,
-                LastName = currentUser.LastName,
-                RandevuSaati = randevuSaati,
-                EmployeeName = randevuAlinanCalisan.Name,
-                EmployeeId = randevuAlinanCalisan.EmployeeID
-            };
+                // Kullanýcýyý almak
+                var currentUser = _context.User.FirstOrDefault(u => u.Email == User.Identity.Name);
+                if (currentUser == null)
+                {
+                    _logger.LogError("Current user not found: {userName}", User.Identity.Name);
+                    return RedirectToAction("Error", "Home");
+                }
 
-            _context.Appointments.Add(yeniRandevu);
-            if (calismaSaatiniBul != null)
-                _context.WorkingHours.Remove(calismaSaatiniBul);
+                // Çalýþaný almak
+                var appointedEmployee = getEmployeeValue(employeeId);
+                if (appointedEmployee == null)
+                {
+                    _logger.LogError("Employee not found with employeeId: {employeeId}", employeeId);
+                    return RedirectToAction("Error", "Home");
+                }
 
-            _context.SaveChanges();
+                // Seçilen hizmeti almak
+                var selectedService = _context.Services.Find(serviceId);
+                if (selectedService == null)
+                {
+                    _logger.LogError("Service not found with serviceId: {serviceId}", serviceId);
+                    return RedirectToAction("Error", "Home");
+                }
 
-            return RedirectToAction("Index", "Home");
+                // Tarih ve saatin düzgün þekilde alýndýðýndan emin olalým
+                if (!selectedCardDate.HasValue)
+                {
+                    _logger.LogError("Selected date is null for employeeId: {employeeId} and serviceId: {serviceId}", employeeId, serviceId);
+                    return RedirectToAction("Error", "Home");
+                }
+
+                DateTime RandevuTarihSaati = selectedCardDate.Value;
+
+                // DateTimeKind kontrolü ve UTC'ye ayarlama
+                if (RandevuTarihSaati.Kind == DateTimeKind.Unspecified)
+                {
+                    RandevuTarihSaati = DateTime.SpecifyKind(RandevuTarihSaati, DateTimeKind.Utc);
+                }
+
+                _logger.LogInformation("Parsed appointment date and time: {RandevuTarihSaati}", RandevuTarihSaati);
+
+                // Tarih ve saat aralýðýný hesapla
+                DateTime tarih = RandevuTarihSaati.Date;
+                TimeSpan baslangicZaman = RandevuTarihSaati.TimeOfDay;
+                TimeSpan bitisZaman = baslangicZaman.Add(TimeSpan.FromMinutes(selectedService.Duration));
+
+                _logger.LogInformation("Appointment time range: {baslangicZaman} to {bitisZaman}", baslangicZaman, bitisZaman);
+
+                // Çakýþan randevularý kontrol et
+                var overlappingAppointments = _context.WorkingHours
+                    .Where(wh => wh.EmployeeId == employeeId &&
+                                 wh.baslangicWorkingHour != null &&
+                                 wh.bitisWorkingHour != null &&
+                                 wh.baslangicWorkingHour.Date == tarih &&
+                                 (
+                                     (baslangicZaman >= wh.baslangicWorkingHour.TimeOfDay && baslangicZaman < wh.bitisWorkingHour.TimeOfDay) ||
+                                     (bitisZaman > wh.baslangicWorkingHour.TimeOfDay && bitisZaman <= wh.bitisWorkingHour.TimeOfDay) ||
+                                     (baslangicZaman <= wh.baslangicWorkingHour.TimeOfDay && bitisZaman >= wh.bitisWorkingHour.TimeOfDay)
+                                 ))
+                    .Any();
+
+                if (overlappingAppointments)
+                {
+                    _logger.LogWarning("Overlapping appointment found for employeeId: {employeeId} on {tarih}", employeeId, tarih);
+                    return RedirectToAction("RandevuAl");
+                }
+
+                // Yeni çalýþma saati ekle
+                var newWorkingHour = new WorkingHours
+                {
+                    EmployeeId = employeeId,
+                    EmployeeName = appointedEmployee.Name,
+                    baslangicWorkingHour = RandevuTarihSaati,
+                    bitisWorkingHour = RandevuTarihSaati.AddMinutes(selectedService.Duration)
+                };
+
+                _context.WorkingHours.Add(newWorkingHour);
+                _logger.LogInformation("New working hour added for employeeId: {employeeId}", employeeId);
+
+                // Yeni randevuyu oluþtur
+                var yeniRandevu = new Appointment
+                {
+                    UserId = currentUser.UserID,
+                    FirstName = currentUser.FirstName,
+                    LastName = currentUser.LastName,
+                    RandevuSaati = RandevuTarihSaati,
+                    EmployeeName = appointedEmployee.Name,
+                    EmployeeId = appointedEmployee.EmployeeID
+                };
+
+                _context.Appointments.Add(yeniRandevu);
+                _context.SaveChanges();
+
+                _logger.LogInformation("New appointment created for userId: {userId}", currentUser.UserID);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Unexpected error occurred: {Message}", ex.Message);
+                return RedirectToAction("Error", "Home");
+            }
         }
+
+
+
 
         // Çýkýþ iþlemi
         public async Task<IActionResult> Logout()

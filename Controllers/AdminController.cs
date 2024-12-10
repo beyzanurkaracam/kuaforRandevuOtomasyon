@@ -406,7 +406,7 @@ namespace kuaforBerberOtomasyon.Controllers
 
             return RedirectToAction("Employees", "Admin");
         }
-        [HttpPost]
+       /* [HttpPost]
         public IActionResult CreateWorkingHour(int Id, string workingHour)
         {
             _logger.LogInformation("CreateWorkingHour metodu başlatıldı. Çalışan ID: {Id}, Çalışma Saati: {WorkingHour}", Id, workingHour);
@@ -490,7 +490,7 @@ namespace kuaforBerberOtomasyon.Controllers
             }
 
             return RedirectToAction("Index", "Home");
-        }
+        }*/
         public IActionResult DeleteEmployee(int Id)
         {
             var doktor = _context.Employees.Find(Id);

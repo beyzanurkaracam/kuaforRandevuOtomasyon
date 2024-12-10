@@ -60,6 +60,22 @@ namespace kuaforBerberOtomasyon.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "WorkingHours",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    EmployeeId = table.Column<int>(type: "integer", nullable: false),
+                    baslangicWorkingHour = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    bitisWorkingHour = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    EmployeeName = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WorkingHours", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "EmployeeServices",
                 columns: table => new
                 {
@@ -89,55 +105,30 @@ namespace kuaforBerberOtomasyon.Migrations
                 name: "Appointments",
                 columns: table => new
                 {
-                    AppointmentID = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    AppointmentDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    StartTime = table.Column<TimeSpan>(type: "interval", nullable: false),
-                    EndTime = table.Column<TimeSpan>(type: "interval", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    TotalPrice = table.Column<decimal>(type: "numeric", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UserID = table.Column<int>(type: "integer", nullable: false),
-                    EmployeeID = table.Column<int>(type: "integer", nullable: false),
-                    ServiceID = table.Column<int>(type: "integer", nullable: false)
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: false),
+                    LastName = table.Column<string>(type: "text", nullable: false),
+                    RandevuSaati = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    EmployeeName = table.Column<string>(type: "text", nullable: false),
+                    EmployeeId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Appointments", x => x.AppointmentID);
+                    table.PrimaryKey("PK_Appointments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Appointments_Employees_EmployeeID",
-                        column: x => x.EmployeeID,
-                        principalTable: "Employees",
-                        principalColumn: "EmployeeID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Appointments_Services_ServiceID",
-                        column: x => x.ServiceID,
-                        principalTable: "Services",
-                        principalColumn: "ServiceID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Appointments_User_UserID",
-                        column: x => x.UserID,
+                        name: "FK_Appointments_User_UserId",
+                        column: x => x.UserId,
                         principalTable: "User",
                         principalColumn: "UserID",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Appointments_EmployeeID",
+                name: "IX_Appointments_UserId",
                 table: "Appointments",
-                column: "EmployeeID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Appointments_ServiceID",
-                table: "Appointments",
-                column: "ServiceID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Appointments_UserID",
-                table: "Appointments",
-                column: "UserID");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EmployeeServices_EmployeeID",
@@ -158,6 +149,9 @@ namespace kuaforBerberOtomasyon.Migrations
 
             migrationBuilder.DropTable(
                 name: "EmployeeServices");
+
+            migrationBuilder.DropTable(
+                name: "WorkingHours");
 
             migrationBuilder.DropTable(
                 name: "User");

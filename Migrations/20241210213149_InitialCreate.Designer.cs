@@ -12,8 +12,8 @@ using kuaforBerberOtomasyon.Models;
 namespace kuaforBerberOtomasyon.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20241210111709_UpdateWorkingHoursTable")]
-    partial class UpdateWorkingHoursTable
+    [Migration("20241210213149_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -178,7 +178,10 @@ namespace kuaforBerberOtomasyon.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("WorkingHour")
+                    b.Property<DateTime>("baslangicWorkingHour")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("bitisWorkingHour")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");

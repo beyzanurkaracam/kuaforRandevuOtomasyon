@@ -175,7 +175,10 @@ namespace kuaforBerberOtomasyon.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("WorkingHour")
+                    b.Property<DateTime>("baslangicWorkingHour")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("bitisWorkingHour")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
