@@ -1,0 +1,18 @@
+﻿@using kuaforBerberOtomasyon.Models.Entities
+@model Employee
+
+<h2>Çalışma Saati Oluştur - @Model.Name</h2>
+
+<div></div>
+
+<form method="post" asp-action="CreateWorkingHour">
+    <!-- EmployeeID'yi gizli olarak doğru şekilde gönderiyoruz -->
+    <input type="hidden" name="Id" value="@Model.EmployeeID" />
+
+    <div class="form-group">
+        <label for="calismaZamani" class="mb-2">Çalışma Tarihi ve Saati:</label>
+        <input type="datetime-local" id="calismaZamani" name="workingHour" class="form-control" min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+    </div>
+
+    <button type="submit" class="btn btn-primary float-end mt-2">Çalışma Saati Oluştur</button>
+</form>

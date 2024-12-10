@@ -1,8 +1,10 @@
 ﻿@using kuaforBerberOtomasyon.Models.DTO
 @model List<EmployeeRespond>
+
 @{
     Layout = "~/Views/Shared/AdminLayout.cshtml";
 }
+
 <a class="btn btn-primary float-end mb-2 mt-2" asp-area="" asp-controller="Admin" asp-action="AddEmployee">Çalışan Ekle</a>
 
 <table class="table">
@@ -23,11 +25,12 @@
                 <td>@item.EmployeeName</td>
 
                 <td>
-                    @if (item.ServiceNames != null && item.ServiceNames.Any())
+                    @if (item.ServiceNames != null && item.ServiceNames.Count > 0)
                     {
                         @foreach (var service in item.ServiceNames)
                         {
-                            <span>@service</span><br />
+                            <span>@service</span>
+                            <br />
                         }
                     }
                     else
@@ -37,10 +40,19 @@
                 </td>
 
                 <td>
-                    <a class="btn btn-secondary" asp-area="" asp-controller="Admin" asp-action="CreateEmployeeWorking" asp-route-id="@item.EmployeeId">Çalışma saati atama</a>
+                    <a class="btn btn-secondary" asp-area="" asp-controller="Admin" asp-action="CreateEmployeeWorking" asp-route-id="@item.EmployeeId">
+                        Çalışma Saati Atama
+                    </a>
                 </td>
                 <td>
-                    <a class="btn btn-danger" asp-area="" asp-controller="Admin" asp-action="DeleteEmployee" asp-route-id="@item.EmployeeId">Sil</a>
+                    <a class="btn btn-warning" asp-area="" asp-controller="Admin" asp-action="UpdateEmployee" asp-route-id="@item.EmployeeId">
+                        Güncelle
+                    </a>
+                </td>
+                <td>
+                    <a class="btn btn-danger" asp-area="" asp-controller="Admin" asp-action="DeleteEmployee" asp-route-id="@item.EmployeeId">
+                        Sil
+                    </a>
                 </td>
             </tr>
         }

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.IO.Pipelines;
 using System.Security.Claims;
 using kuaforBerberOtomasyon.Models;
@@ -7,6 +8,8 @@ using kuaforBerberOtomasyon.Models.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace kuaforBerberOtomasyon.Controllers
 {
@@ -113,11 +116,11 @@ namespace kuaforBerberOtomasyon.Controllers
                     _logger.LogInformation("Kullanýcý giriþi baþarýlý: {Email}", model.Email);
 
                     var claims = new List<Claim>
-                    {
-                        
-                        new Claim(ClaimTypes.Email, user.Email),
-                        new Claim(ClaimTypes.Role, user.Role)
-                    };
+            {
+
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role)
+            };
 
                     var identity = new ClaimsIdentity(claims, "Login");
                     var principal = new ClaimsPrincipal(identity);
@@ -143,7 +146,7 @@ namespace kuaforBerberOtomasyon.Controllers
 
             return View(model);
         }
-         public IActionResult Services()
+        public IActionResult Services()
          {
               var services = _context.Services.ToList();
         
@@ -167,28 +170,166 @@ namespace kuaforBerberOtomasyon.Controllers
          }
         public IActionResult Employees()
         {
-            
-                var employees = _context.Employees.ToList();
+            // Veritabanýndan tüm çalýþanlarý alýyoruz
+            var employees = _context.Employees
+                                    .Include(e => e.EmployeeServices) // EmployeeServices iliþkisinde yer alan hizmetleri de dahil ediyoruz
+                                    .ThenInclude(es => es.Service)  // Hizmet adý bilgilerini almak için iliþkiyi takip ediyoruz
+                                    .ToList();
 
+            var employeeList = new List<EmployeeRespond>();
 
-                var employeeList = new List<EmployeeRespond>();
-
-                foreach (var employee in employees)
+            foreach (var employee in employees)
+            {
+                var employeeRespond = new EmployeeRespond
                 {
+                    EmployeeId = employee.EmployeeID,
+                    EmployeeName = employee.Name,
+                    // Çalýþanýn aldýðý hizmetlerin adlarýný alýyoruz
+                    ServiceNames = employee.EmployeeServices.Select(es => es.Service.Name).ToList()
+                };
 
-                    var employeeler = new EmployeeRespond
+                employeeList.Add(employeeRespond);
+            }
+
+            // Modeli view'a gönderiyoruz
+            return View(employeeList);
+        }
+        [Authorize]
+        [HttpGet]
+        public IActionResult RandevuAl()
+        {
+            _logger.LogInformation("Randevu al sayfasý yüklendi.");
+
+            var serviceList = _context.Services.Select(h => new SelectListItem
+            {
+                Text = h.Name,
+                Value = h.ServiceID.ToString()
+            }).ToList();
+
+            // Çalýþanlar baþlangýçta boþ bir liste olabilir
+            var employeeList = new List<SelectListItem>();
+
+            var model = new Tuple<List<SelectListItem>, List<SelectListItem>>(serviceList, employeeList);
+
+            _logger.LogInformation("Hizmet listesi baþarýyla yüklendi. Toplam hizmet: {Count}", serviceList.Count);
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult RandevuAl(IFormCollection form)
+        {
+            _logger.LogInformation("HTTP POST metodu çaðrýldý.");
+
+            try
+            {
+                if (string.IsNullOrEmpty(form["id"]))
+                {
+                    _logger.LogWarning("Kullanýcý herhangi bir hizmet seçmeden form gönderdi.");
+                    ModelState.AddModelError("id", "Lütfen bir hizmet seçin.");
+
+                    var serviceListe = _context.Services.Select(h => new SelectListItem
                     {
-                        EmployeeId = employee.EmployeeID,
-                        EmployeeName = employee.Name,
-                        ServiceName = employee.ServiceName
-                    };
+                        Value = h.ServiceID.ToString(),
+                        Text = h.Name
+                    }).ToList();
 
-                    employeeList.Add(employeeler);
+                    return View(new Tuple<List<SelectListItem>, List<SelectListItem>>(serviceListe, new List<SelectListItem>()));
                 }
 
-                return View(employeeList);
-            
-           
+                int selectedServiceId = Convert.ToInt32(form["id"]);
+                _logger.LogInformation("Kullanýcý {ServiceId} hizmetini seçti.", selectedServiceId);
+
+                var employeesByService = _context.Employees
+                    .Where(x => x.EmployeeServices
+                        .Any(es => es.ServiceID == selectedServiceId)) // Belirtilen hizmete sahip çalýþanlarý al
+                    .Select(d => new SelectListItem
+                    {
+                        Value = d.EmployeeID.ToString(),
+                        Text = d.Name
+                    })
+                    .ToList();
+
+                _logger.LogInformation("Hizmete baðlý çalýþanlar baþarýyla yüklendi. Çalýþan sayýsý: {Count}", employeesByService.Count);
+
+                var serviceList = _context.Services.Select(h => new SelectListItem
+                {
+                    Value = h.ServiceID.ToString(),
+                    Text = h.Name
+                }).ToList();
+
+                // Çalýþanlarý ve hizmetleri ayný sayfada göster
+                return View(new Tuple<List<SelectListItem>, List<SelectListItem>>(serviceList, employeesByService));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Randevu alýrken bir hata oluþtu.");
+                ModelState.AddModelError("", "Bir hata oluþtu. Lütfen tekrar deneyin.");
+                var serviceList = _context.Services.Select(h => new SelectListItem
+                {
+                    Value = h.ServiceID.ToString(),
+                    Text = h.Name
+                }).ToList();
+                ModelState.Clear();
+                return View(new Tuple<List<SelectListItem>, List<SelectListItem>>(serviceList, new List<SelectListItem>()));
+            }
+        }
+
+        [HttpGet]
+        public IActionResult SelectEmployee(int Id)
+        {
+            var employeeCalisma = _context.WorkingHours
+                .Where(x => x.EmployeeId == Id)
+                .ToList();
+
+            if (employeeCalisma == null || employeeCalisma.Count == 0)
+            {
+                ViewBag.Mesaj = "Çalýþanýn uygun randevusu bulunamadý.";
+                return View();
+            }
+
+            var model = new Tuple<List<WorkingHours>, int>(employeeCalisma, Id);
+            return View(model);
+        }
+
+
+        // idsine göre gelen doktoru bulan döndüren metod 
+        public Employee getEmployeeValue(int Id)
+        {
+            var appointedEmployee = _context.Employees.Where(x => x.EmployeeID == Id).FirstOrDefault();
+            return appointedEmployee;
+        }
+        [HttpPost]
+        public IActionResult CreateAppointment(int employeeId, string selectedCardDate)
+        {
+            var currentUser = _context.User.FirstOrDefault(u => u.FirstName == User.Identity.Name);
+
+            //randevu alýnan doktoru idsine göre bul
+            var randevuAlinanCalisan = getEmployeeValue(employeeId);
+
+            //randevu saatini al
+            DateTime randevuSaati = DateTime.ParseExact(selectedCardDate, "yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
+
+            //Doktorun id si ve çalýþma saati veritabanýnda varsa yani böyle bir doktor varsa bunu deðiþkene ata çünk randevu alýnca bunu kaldýrmamýz gerekecek.
+            var calismaSaatiniBul = _context.WorkingHours.ToList().Where(x => x.EmployeeId == employeeId && x.WorkingHour == randevuSaati).FirstOrDefault();
+
+
+            var yeniRandevu = new Appointment
+            {
+                UserId = currentUser.UserID,
+                FirstName = currentUser.FirstName,
+                LastName = currentUser.LastName,
+                RandevuSaati = randevuSaati,
+                EmployeeName = randevuAlinanCalisan.Name,
+                EmployeeId = randevuAlinanCalisan.EmployeeID
+            };
+
+            _context.Appointments.Add(yeniRandevu);
+            if (calismaSaatiniBul != null)
+                _context.WorkingHours.Remove(calismaSaatiniBul);
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Index", "Home");
         }
 
         // Çýkýþ iþlemi

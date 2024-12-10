@@ -12,8 +12,8 @@ using kuaforBerberOtomasyon.Models;
 namespace kuaforBerberOtomasyon.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20241208103732_AddDescriptionToServices")]
-    partial class AddDescriptionToServices
+    [Migration("20241208165320_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -83,10 +83,6 @@ namespace kuaforBerberOtomasyon.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ServiceName")
                         .IsRequired()
                         .HasColumnType("text");
 

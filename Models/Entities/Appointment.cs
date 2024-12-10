@@ -6,23 +6,12 @@ namespace kuaforBerberOtomasyon.Models.Entities
     public class Appointment
     {
         [Key]
-        public int AppointmentID { get; set; }
-        public DateTime AppointmentDate { get; set; }
-        public TimeSpan StartTime { get; set; }
-        public TimeSpan EndTime { get; set; }
-
-        public AppointmentStatus Status { get; set; } // Enum kullanılıyor
-        public decimal TotalPrice { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-
-        // Yabancı anahtarlar
-        public int UserID { get; set; }
-        public User User { get; set; }
-
-        public int EmployeeID { get; set; }
-        public Employee Employee { get; set; }
-
-        public int ServiceID { get; set; }
-        public Services Service { get; set; }
+        public int Id { get; set; }
+        public int UserId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public DateTime RandevuSaati { get; set; }
+        public string EmployeeName{ get; set; }
+        public int EmployeeId { get; set; }
     }
 }

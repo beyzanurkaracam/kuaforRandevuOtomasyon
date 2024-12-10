@@ -1,10 +1,19 @@
-﻿namespace kuaforBerberOtomasyon.Models.DTO
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
+
+namespace kuaforBerberOtomasyon.Models.DTO
 {
     public class AdminEmployeeRequest
     {
-        public String Name { get; set; } // Enum kullanımı
-        public int EmployeeID { get; set; }
-        public String ServiceName { get; set; }
-        
+        [Required(ErrorMessage = "Name is required")]
+        public string Name { get; set; }
+
+        [Required(ErrorMessage = "At least one service must be selected")]
+        public List<int> ServiceId { get; set; }  // List<int> olmalı, çünkü birden fazla hizmet seçilebilir
+
+        public List<SelectListItem> ServiceList { get; set; }
     }
+
+
 }
+

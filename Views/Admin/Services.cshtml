@@ -1,4 +1,4 @@
-﻿﻿@using kuaforBerberOtomasyon.Models.DTO
+﻿@using kuaforBerberOtomasyon.Models.DTO
 
 @model List<ServicesRespond>
 @{
@@ -12,6 +12,8 @@
             <th scope="col">ID</th>
             <th scope="col">Hizmet</th>
             <th scope="col">Süre</th>
+            <th scope="col">Fiyat</th>
+            <th scope="col">Güncelle</th>
             <th scope="col">Sil</th>
         </tr>
     </thead>
@@ -19,10 +21,17 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>@item.serviceId</td>
+                <td >@item.serviceId</td>
                 <td>@item.Name</td>
                 <td>@item.Duration</td>
                 <td>@item.Price</td>
+                <td>
+                    <!-- Güncelleme işlemi için form ekleyelim -->
+                    <form asp-area="" asp-controller="Admin" asp-action="UpdateService" method="get">
+                        <input type="hidden" name="id" value="@item.serviceId" />
+                        <button type="submit" class="btn btn-warning">Güncelle</button>
+                    </form>
+                </td>
                 <td>
                     <a class="btn btn-danger" asp-area="" asp-controller="Admin" asp-action="DeleteService" asp-route-id="@item.serviceId">Sil</a>
                 </td>

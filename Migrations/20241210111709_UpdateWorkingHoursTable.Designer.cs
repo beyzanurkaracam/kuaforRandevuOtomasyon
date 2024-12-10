@@ -12,8 +12,8 @@ using kuaforBerberOtomasyon.Models;
 namespace kuaforBerberOtomasyon.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20241204172718_YourMigrationName")]
-    partial class YourMigrationName
+    [Migration("20241210111709_UpdateWorkingHoursTable")]
+    partial class UpdateWorkingHoursTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,46 +27,36 @@ namespace kuaforBerberOtomasyon.Migrations
 
             modelBuilder.Entity("kuaforBerberOtomasyon.Models.Entities.Appointment", b =>
                 {
-                    b.Property<int>("AppointmentID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AppointmentID"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("AppointmentDate")
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("EmployeeName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("RandevuSaati")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("EmployeeID")
+                    b.Property<int>("UserId")
                         .HasColumnType("integer");
 
-                    b.Property<TimeSpan>("EndTime")
-                        .HasColumnType("interval");
+                    b.HasKey("Id");
 
-                    b.Property<int>("ServiceID")
-                        .HasColumnType("integer");
-
-                    b.Property<TimeSpan>("StartTime")
-                        .HasColumnType("interval");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("numeric");
-
-                    b.Property<int>("UserID")
-                        .HasColumnType("integer");
-
-                    b.HasKey("AppointmentID");
-
-                    b.HasIndex("EmployeeID");
-
-                    b.HasIndex("ServiceID");
-
-                    b.HasIndex("UserID");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Appointments");
                 });
@@ -82,15 +72,9 @@ namespace kuaforBerberOtomasyon.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<TimeSpan>("EndTime")
-                        .HasColumnType("interval");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<TimeSpan>("StartTime")
-                        .HasColumnType("interval");
 
                     b.HasKey("EmployeeID");
 
@@ -134,8 +118,9 @@ namespace kuaforBerberOtomasyon.Migrations
                     b.Property<int>("Duration")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Name")
-                        .HasColumnType("integer");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
@@ -178,31 +163,36 @@ namespace kuaforBerberOtomasyon.Migrations
                     b.ToTable("User");
                 });
 
+            modelBuilder.Entity("kuaforBerberOtomasyon.Models.Entities.WorkingHours", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("EmployeeName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("WorkingHour")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WorkingHours");
+                });
+
             modelBuilder.Entity("kuaforBerberOtomasyon.Models.Entities.Appointment", b =>
                 {
-                    b.HasOne("kuaforBerberOtomasyon.Models.Entities.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("kuaforBerberOtomasyon.Models.Entities.Services", "Service")
-                        .WithMany()
-                        .HasForeignKey("ServiceID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("kuaforBerberOtomasyon.Models.Entities.User", "User")
+                    b.HasOne("kuaforBerberOtomasyon.Models.Entities.User", null)
                         .WithMany("Appointments")
-                        .HasForeignKey("UserID")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("Service");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("kuaforBerberOtomasyon.Models.Entities.EmployeeService", b =>

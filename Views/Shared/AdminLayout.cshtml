@@ -20,21 +20,17 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Ana Bilim Dallarını Yönet</a>
-                        </li>
+                        
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Services">Hizmetleri Yönet</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Doktor">Doktorları Yönet</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Employees">Çalışanları Yönet</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Randevu">Randevular</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Appointments">Randevular</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Services">Hizmetleri Yönet</a>
-                        </li>
+                        
                     </ul>
                     <!-- Dropdown Menü -->
                     <ul class="navbar-nav">
@@ -43,7 +39,7 @@
                                 @User.Identity.Name
                             </a>
                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item text-dark" asp-area="" asp-controller="Home" asp-action="CikisYap">Çıkış Yap</a>
+                                <a class="dropdown-item text-dark" asp-area="" asp-controller="Home" asp-action="LogOut">Çıkış Yap</a>
                             </div>
                         </li>
                     </ul>
@@ -75,12 +71,12 @@
     }
 
         .nav-item:hover {
-            background-color: #660099; /* Hover efekti için arka plan rengi */
+            background-color: #fff0f5; /* Hover efekti için arka plan rengi */
         }
 
         /* Aktif sayfa vurgusu için */
         .nav-item.active {
-            background-color: #660099; /* Aktif sayfa için arka plan rengi */
+            background-color: #fff0f5; /* Aktif sayfa için arka plan rengi */
             border-radius: 5px;
         }
 

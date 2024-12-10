@@ -8,7 +8,7 @@ namespace kuaforBerberOtomasyon.Models.Entities
         public int EmployeeID { get; set; }
         public string Name { get; set; }
        
-        public string ServiceName { get; set; }
+        
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         // Yabancı anahtarlar

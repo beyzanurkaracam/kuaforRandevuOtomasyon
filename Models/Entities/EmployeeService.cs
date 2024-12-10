@@ -5,12 +5,13 @@ namespace kuaforBerberOtomasyon.Models.Entities
     public class EmployeeService
     {
         [Key]
-        public int EmployeeServiceID { get; set; } // Birincil anahtar
-        public int EmployeeID { get; set; } // Yabancı anahtar
-        public int ServiceID { get; set; } // Yabancı anahtar
+        public int EmployeeServiceID { get; set; }
 
-        // Diğer özellikler
-        public virtual Employee Employee { get; set; }
-        public virtual Services Service { get; set; }
+        // Yabancı Anahtarlar
+        public int EmployeeID { get; set; }
+        public Employee Employee { get; set; }
+
+        public int ServiceID { get; set; }
+        public Services Service { get; set; }
     }
 }
