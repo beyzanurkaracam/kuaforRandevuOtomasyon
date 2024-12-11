@@ -1,9 +1,5 @@
 ﻿@using kuaforBerberOtomasyon.Models.DTO
 @model List<EmployeeRespond>
-@{
-    Layout = "~/Views/Shared/AdminLayout.cshtml";
-}
-<a class="btn btn-primary float-end mb-2 mt-2" asp-area="" asp-controller="Admin" asp-action="AddEmployee">Çalışan Ekle</a>
 
 <table class="table">
     <thead class="thead-light">
@@ -11,8 +7,7 @@
             <th scope="col">ID</th>
             <th scope="col">Ad Soyad</th>
             <th scope="col">Verdiği Hizmet</th>
-            <th scope="col">Çalışma Saati Atama</th>
-            <th scope="col">Sil</th>
+            
         </tr>
     </thead>
     <tbody>
@@ -36,12 +31,7 @@
                     }
                 </td>
 
-                <td>
-                    <a class="btn btn-secondary" asp-area="" asp-controller="Admin" asp-action="CreateEmployeeWorking" asp-route-id="@item.EmployeeId">Çalışma saati atama</a>
-                </td>
-                <td>
-                    <a class="btn btn-danger" asp-area="" asp-controller="Admin" asp-action="DeleteEmployee" asp-route-id="@item.EmployeeId">Sil</a>
-                </td>
+               
             </tr>
         }
     </tbody>

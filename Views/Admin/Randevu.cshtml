@@ -8,8 +8,9 @@
     <thead class="thead-light">
         <tr>
             <th scope="col">Çalışan Adı</th>
-            <th scope="col">Müşteri Adı</th>
+            <th scope="col">Müşteri Adı Soyadı</th>
             <th scope="col">Randevu Zamanı</th>
+            <th scope="col">Randevu Onay Durumu</th>
             <th scope="col">Randevu Onayı</th>
             <th scope="col">Randevuyu Sil</th>
         </tr>
@@ -19,10 +20,10 @@
         {
             <tr>
                 <td>@item.EmployeeName</td>
-                <td>@item.FirstName</td>
-                <td>@item.LastName</td>
-                <td>@item.IsApproved</td>
+                <td>@item.FirstName @item.LastName</td>
                 <td>@item.RandevuSaati</td>
+                <td>@item.IsApproved</td>
+                
                 <td>
                     <a class="btn btn-danger" asp-area="" asp-controller="Admin" asp-action="ApproveAppointments" asp-route-id="@item.Id">Randevu Onayla</a>
                 </td>

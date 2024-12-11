@@ -2,6 +2,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO.Pipelines;
 using System.Security.Claims;
+using kuaforBerberOtomasyon.AIService;
+using kuaforBerberOtomasyon.Enums;
 using kuaforBerberOtomasyon.Models;
 using kuaforBerberOtomasyon.Models.DTO;
 using kuaforBerberOtomasyon.Models.Entities;
@@ -18,11 +20,22 @@ namespace kuaforBerberOtomasyon.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly Context _context;
+        private readonly HairCutRecommendationService _hairCutRecommendationService;
+       /* private readonly FaceRecognitionService _faceRecognitionService;
+        public HairCutRecommendationController()
+        {
+            // Azure Face API'yi kullanmak için FaceRecognitionService'i baþlatýyoruz
+            string apiKey = "YOUR_AZURE_API_KEY";
+            string endpoint = "YOUR_AZURE_ENDPOINT";
+            _faceRecognitionService = new FaceRecognitionService(apiKey, endpoint);
 
+            _hairCutRecommendationService = new HairCutRecommendationService();
+        }*/
         public HomeController(ILogger<HomeController> logger, Context context)
         {
             _logger = logger;
             _context = context;
+            
         }
 
         // Ana sayfa
@@ -67,7 +80,7 @@ namespace kuaforBerberOtomasyon.Controllers
                 };
 
                 // Admin kontrolü
-                if (model.Email.ToLower() == "g211210037@ogr.sakarya.edu.tr" && model.Password.ToLower() == "sau")
+                if (model.Email.ToLower() == "g211210054@ogr.sakarya.edu.tr" && model.Password.ToLower() == "sau")
                 {
                     yeniKullanici.Role = "admin";
                 }
@@ -344,7 +357,6 @@ namespace kuaforBerberOtomasyon.Controllers
 
             try
             {
-                // Kullanýcýyý almak
                 var currentUser = _context.User.FirstOrDefault(u => u.Email == User.Identity.Name);
                 if (currentUser == null)
                 {
@@ -352,7 +364,6 @@ namespace kuaforBerberOtomasyon.Controllers
                     return RedirectToAction("Error", "Home");
                 }
 
-                // Çalýþaný almak
                 var appointedEmployee = getEmployeeValue(employeeId);
                 if (appointedEmployee == null)
                 {
@@ -360,7 +371,6 @@ namespace kuaforBerberOtomasyon.Controllers
                     return RedirectToAction("Error", "Home");
                 }
 
-                // Seçilen hizmeti almak
                 var selectedService = _context.Services.Find(serviceId);
                 if (selectedService == null)
                 {
@@ -368,7 +378,6 @@ namespace kuaforBerberOtomasyon.Controllers
                     return RedirectToAction("Error", "Home");
                 }
 
-                // Tarih ve saatin düzgün þekilde alýndýðýndan emin olalým
                 if (!selectedCardDate.HasValue)
                 {
                     _logger.LogError("Selected date is null for employeeId: {employeeId} and serviceId: {serviceId}", employeeId, serviceId);
@@ -377,7 +386,6 @@ namespace kuaforBerberOtomasyon.Controllers
 
                 DateTime RandevuTarihSaati = selectedCardDate.Value;
 
-                // DateTimeKind kontrolü ve UTC'ye ayarlama
                 if (RandevuTarihSaati.Kind == DateTimeKind.Unspecified)
                 {
                     RandevuTarihSaati = DateTime.SpecifyKind(RandevuTarihSaati, DateTimeKind.Utc);
@@ -385,19 +393,25 @@ namespace kuaforBerberOtomasyon.Controllers
 
                 _logger.LogInformation("Parsed appointment date and time: {RandevuTarihSaati}", RandevuTarihSaati);
 
-                // Tarih ve saat aralýðýný hesapla
-                DateTime tarih = RandevuTarihSaati.Date;
                 TimeSpan baslangicZaman = RandevuTarihSaati.TimeOfDay;
                 TimeSpan bitisZaman = baslangicZaman.Add(TimeSpan.FromMinutes(selectedService.Duration));
 
-                _logger.LogInformation("Appointment time range: {baslangicZaman} to {bitisZaman}", baslangicZaman, bitisZaman);
+                // Çalýþma saatleri kontrolü
+                TimeSpan workStart = new TimeSpan(9, 0, 0); // 09:00
+                TimeSpan workEnd = new TimeSpan(18, 0, 0); // 18:00
 
-                // Çakýþan randevularý kontrol et
+                if (baslangicZaman < workStart || bitisZaman > workEnd)
+                {
+                    _logger.LogWarning("Appointment time is outside working hours: {baslangicZaman} to {bitisZaman}", baslangicZaman, bitisZaman);
+                    TempData["ErrorMessage"] = "Seçtiðiniz saat 09:00 ile 18:00 arasýnda olmalýdýr. Lütfen geçerli bir saat seçin.";
+                    return RedirectToAction("RandevuAl");
+                }
+
                 var overlappingAppointments = _context.WorkingHours
                     .Where(wh => wh.EmployeeId == employeeId &&
                                  wh.baslangicWorkingHour != null &&
                                  wh.bitisWorkingHour != null &&
-                                 wh.baslangicWorkingHour.Date == tarih &&
+                                 wh.baslangicWorkingHour.Date == RandevuTarihSaati.Date &&
                                  (
                                      (baslangicZaman >= wh.baslangicWorkingHour.TimeOfDay && baslangicZaman < wh.bitisWorkingHour.TimeOfDay) ||
                                      (bitisZaman > wh.baslangicWorkingHour.TimeOfDay && bitisZaman <= wh.bitisWorkingHour.TimeOfDay) ||
@@ -407,13 +421,11 @@ namespace kuaforBerberOtomasyon.Controllers
 
                 if (overlappingAppointments)
                 {
-                    _logger.LogWarning("Overlapping appointment found for employeeId: {employeeId} on {tarih}", employeeId, tarih);
+                    _logger.LogWarning("Overlapping appointment found for employeeId: {employeeId} on {tarih}", employeeId, RandevuTarihSaati.Date);
                     TempData["ErrorMessage"] = "Seçtiðiniz tarihte çalýþan müsait deðil. Lütfen farklý bir tarih seçin.";
-
                     return RedirectToAction("RandevuAl");
                 }
 
-                // Yeni çalýþma saati ekle
                 var newWorkingHour = new WorkingHours
                 {
                     EmployeeId = employeeId,
@@ -425,7 +437,6 @@ namespace kuaforBerberOtomasyon.Controllers
                 _context.WorkingHours.Add(newWorkingHour);
                 _logger.LogInformation("New working hour added for employeeId: {employeeId}", employeeId);
 
-                // Yeni randevuyu oluþtur
                 var yeniRandevu = new Appointment
                 {
                     UserId = currentUser.UserID,
@@ -435,7 +446,7 @@ namespace kuaforBerberOtomasyon.Controllers
                     RandevuSaati = RandevuTarihSaati,
                     EmployeeName = appointedEmployee.Name,
                     EmployeeId = appointedEmployee.EmployeeID,
-                    ServiceName= selectedService.Name
+                    ServiceName = selectedService.Name
                 };
 
                 _context.Appointments.Add(yeniRandevu);
@@ -451,6 +462,7 @@ namespace kuaforBerberOtomasyon.Controllers
                 return RedirectToAction("Error", "Home");
             }
         }
+
         public IActionResult CancelAppointment(int Id)
         {
             var silinecekRandevu = _context.Appointments.Find(Id);
@@ -473,7 +485,21 @@ namespace kuaforBerberOtomasyon.Controllers
             var aktifRandevular = _context.Appointments.Where(x => x.Email == User.Identity.Name).ToList(); // aktif kullanýcýnýn adýyla bir randevu var mý.
             return View(aktifRandevular);
         }
+       /* [HttpPost]
+        public async Task<IActionResult> GetHairCutRecommendation(string imagePath)
+        {
+            // Yüz þekli tespitini Azure Face API ile yapýyoruz
+            var faceShape = await _faceRecognitionService.GetFaceShape(imagePath);
 
+            // Yüz þekline göre öneri alýyoruz
+            if (faceShape.HasValue)
+            {
+                var suggestion = _hairCutRecommendationService.GetSuggestion(faceShape.Value);
+                return View("HairCutRecommendation", suggestion);
+            }
+
+            return View("Error", "Yüz þekli tespit edilemedi.");
+        }*/
 
         // Çýkýþ iþlemi
         public async Task<IActionResult> Logout()

@@ -1,9 +1,28 @@
 ﻿@model kuaforBerberOtomasyon.Models.DTO.LoginViewModel
 
-<h1>Giriş Yap</h1>
-<form asp-action="Login" asp-controller="Home" method="post">
-    <input type="email" name="Email" placeholder="E-posta" required />
-    <input type="password" name="Password" placeholder="Şifre" required />
-    <button type="submit">Giriş Yap</button>
-</form>
-<p>@TempData["LoginError"]</p>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h1 class="text-center mb-4">Giriş Yap</h1>
+                    <form asp-action="Login" asp-controller="Home" method="post">
+                        <div class="form-group mb-3">
+                            <label for="Email">E-posta</label>
+                            <input type="email" name="Email" id="Email" class="form-control" placeholder="E-posta" required />
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="Password">Şifre</label>
+                            <input type="password" name="Password" id="Password" class="form-control" placeholder="Şifre" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
+                    </form>
+                    @if (TempData["LoginError"] != null)
+                    {
+                        <p class="text-danger text-center mt-3">@TempData["LoginError"]</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

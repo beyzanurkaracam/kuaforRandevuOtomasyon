@@ -1,6 +1,10 @@
 ﻿namespace kuaforBerberOtomasyon.Enums
 {
-    public class FaceShape
+    public enum FaceShape
     {
+        Round,
+        Square,
+        Oval,
+        Triangle
     }
 }

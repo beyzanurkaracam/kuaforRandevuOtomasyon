@@ -20,7 +20,7 @@
 @foreach (var item in sortedServices)
 {
     <div class="list-group mb-3">
-        <a href="@Url.Action("EmployeesAndServices", "Home", new { item.serviceId })" class="list-group-item list-group-item-action flex-column align-items-start">
+        <a href="@Url.Action("Employees", "Home", new { item.serviceId })" class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-between">
 				<h5 class="mb-1">@(item.Name) </h5>
             </div>
@@ -32,7 +32,7 @@
 
 <style>
     .list-group-item:hover {
-        background-color: #bd5d38; /* Burada istediğiniz arka plan rengini belirtebilirsiniz */
+        background-color: #fff0f5; /* Burada istediğiniz arka plan rengini belirtebilirsiniz */
         cursor: pointer;
     }
 </style>
