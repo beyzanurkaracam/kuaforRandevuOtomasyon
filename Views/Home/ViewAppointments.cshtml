@@ -1,0 +1,32 @@
+﻿﻿@using kuaforBerberOtomasyon.Models.Entities
+@model List<Appointment>
+
+<header class="text-center py-4">
+    <h1>Randevularım</h1>
+    <p class="lead"></p>
+</header>
+
+
+<table class="table">
+    <thead class="thead-light">
+        <tr>
+            <th scope="col">Çalışan Adı</th>
+            <th scope="col">Kullanıcı Adı Ve Soyadı</th>
+            <th scope="col">Randevu Zamanı</th>
+            <th scope="col">Randevuyu İptal Et</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.EmployeeName</td>
+                <td>@item.FirstName @item.LastName </td>
+                <td>@item.RandevuSaati</td>
+                <td>
+                    <a class="btn btn-danger" asp-area="" asp-controller="Home" asp-action="CancelAppointment" asp-route-id="@item.Id">İptal Et</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

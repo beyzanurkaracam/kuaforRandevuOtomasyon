@@ -408,6 +408,8 @@ namespace kuaforBerberOtomasyon.Controllers
                 if (overlappingAppointments)
                 {
                     _logger.LogWarning("Overlapping appointment found for employeeId: {employeeId} on {tarih}", employeeId, tarih);
+                    TempData["ErrorMessage"] = "Seçtiðiniz tarihte çalýþan müsait deðil. Lütfen farklý bir tarih seçin.";
+
                     return RedirectToAction("RandevuAl");
                 }
 
@@ -429,9 +431,11 @@ namespace kuaforBerberOtomasyon.Controllers
                     UserId = currentUser.UserID,
                     FirstName = currentUser.FirstName,
                     LastName = currentUser.LastName,
+                    Email = currentUser.Email,
                     RandevuSaati = RandevuTarihSaati,
                     EmployeeName = appointedEmployee.Name,
-                    EmployeeId = appointedEmployee.EmployeeID
+                    EmployeeId = appointedEmployee.EmployeeID,
+                    ServiceName= selectedService.Name
                 };
 
                 _context.Appointments.Add(yeniRandevu);
@@ -447,8 +451,28 @@ namespace kuaforBerberOtomasyon.Controllers
                 return RedirectToAction("Error", "Home");
             }
         }
+        public IActionResult CancelAppointment(int Id)
+        {
+            var silinecekRandevu = _context.Appointments.Find(Id);
 
+            if (silinecekRandevu != null)
+            {
+                _context.Remove(silinecekRandevu);
+                _context.SaveChanges();
+                return RedirectToAction("ViewAppointments", "Home");
+            }
+            else
+            {
+                return RedirectToAction("ViewAppointments", "Home");
+            }
+        }
 
+        [Authorize]
+        public IActionResult ViewAppointments()
+        {
+            var aktifRandevular = _context.Appointments.Where(x => x.Email == User.Identity.Name).ToList(); // aktif kullanýcýnýn adýyla bir randevu var mý.
+            return View(aktifRandevular);
+        }
 
 
         // Çýkýþ iþlemi

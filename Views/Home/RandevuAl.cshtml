@@ -3,7 +3,12 @@
 @{
     ViewData["Title"] = "Randevu Al";
 }
-
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
 @using (Html.BeginForm("RandevuAl", "Home", FormMethod.Post))
 {
     <div class="row justify-content-center">

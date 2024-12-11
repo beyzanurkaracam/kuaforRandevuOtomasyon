@@ -406,91 +406,57 @@ namespace kuaforBerberOtomasyon.Controllers
 
             return RedirectToAction("Employees", "Admin");
         }
-       /* [HttpPost]
-        public IActionResult CreateWorkingHour(int Id, string workingHour)
+        public IActionResult Randevu()
         {
-            _logger.LogInformation("CreateWorkingHour metodu başlatıldı. Çalışan ID: {Id}, Çalışma Saati: {WorkingHour}", Id, workingHour);
-
             if (AdminControl())
             {
-                var employee = _context.Employees.Find(Id);
-
-                if (employee != null)
-                {
-                    try
-                    {
-                        _logger.LogInformation("Çalışan bulundu: {EmployeeName}", employee.Name);
-
-                        DateTime calismaZamani = DateTime.ParseExact(workingHour, "yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture);
-                        _logger.LogInformation("Çalışma saati başarıyla dönüştürüldü: {CalismaZamani}", calismaZamani);
-
-                        var yeniCalismaSaati = new WorkingHours
-                        {
-                            EmployeeId = employee.EmployeeID,
-                            WorkingHour = calismaZamani,
-                            EmployeeName = employee.Name
-                        };
-
-                        // Veritabanına kaydetme işlemi sırasında daha ayrıntılı loglama
-                        _context.WorkingHours.Add(yeniCalismaSaati);
-                        _logger.LogInformation("Yeni çalışma saati ekleniyor: {CalismaZamani}, Çalışan: {EmployeeName}", calismaZamani, employee.Name);
-
-                        _context.SaveChanges();
-
-                        _logger.LogInformation("Yeni çalışma saati başarıyla kaydedildi: {CalismaZamani} Çalışan: {EmployeeName}", calismaZamani, employee.Name);
-                        return RedirectToAction("Employees", "Admin");
-                    }
-                    catch (DbUpdateException dbEx)
-                    {
-                        _logger.LogError(dbEx, "Veritabanı güncellenirken bir hata oluştu.");
-                        return RedirectToAction("HataSayfasi", "Admin");
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Çalışma saati oluşturulurken bir hata oluştu.");
-                        return RedirectToAction("HataSayfasi", "Admin");
-                    }
-                }
-                else
-                {
-                    _logger.LogWarning("Çalışan bulunamadı. Çalışan ID: {Id}", Id);
-                    return RedirectToAction("HataSayfasi", "Admin");
-                }
+                var randevular = _context.Appointments.ToList();
+                return View(randevular);
             }
             else
             {
-                _logger.LogWarning("Admin kontrolü geçilemedi.");
-                return RedirectToAction("HataSayfasi", "Admin");
+                return RedirectToAction("Index", "Home");
             }
         }
-
-
-
-        [HttpGet]
-        public IActionResult CreateEmployeeWorking(int Id)
+       /* [HttpGet]
+        public IActionResult PendingAppointments()
         {
-            _logger.LogInformation("CreateEmployeeWorking metodu başlatıldı. Çalışan ID: {Id}", Id);
+            var pendingAppointments = _context.Appointments
+                .Where(a => !a.IsApproved) // Onaylanmamış randevuları al
+                .ToList();
+            return View(pendingAppointments);
+        }*/
 
-            if (AdminControl())
+      
+        public IActionResult ApproveAppointments(int Id)
+        {
+            var appointment = _context.Appointments.Find(Id);
+            if (appointment != null)
             {
-                var employee = _context.Employees.Find(Id);
-                if (employee != null)
-                {
-                    _logger.LogInformation("Çalışan bulundu: {EmployeeName}", employee.Name);
-                    return View(employee);
-                }
-                else
-                {
-                    _logger.LogWarning("Çalışan bulunamadı. Çalışan ID: {Id}", Id);
-                }
+                appointment.IsApproved = true; // Randevuyu onayla
+                _context.SaveChanges();
+            }
+            
+            
+            return RedirectToAction("Randevu", "Admin");
+        }
+        public IActionResult DeleteAppointment(int Id)
+        {
+            var silinecekRandevu = _context.Appointments.Find(Id);
+
+            if (silinecekRandevu != null)
+            {
+                _context.Remove(silinecekRandevu);
+                _context.SaveChanges();
+                return RedirectToAction("Randevu", "Admin");
             }
             else
             {
-                _logger.LogWarning("Admin kontrolü geçilemedi.");
+                return RedirectToAction("Randevu", "Admin");
             }
 
-            return RedirectToAction("Index", "Home");
-        }*/
+        }
+
         public IActionResult DeleteEmployee(int Id)
         {
             var doktor = _context.Employees.Find(Id);

@@ -1,0 +1,35 @@
+﻿﻿@using kuaforBerberOtomasyon.Models.Entities
+@model List<Appointment>
+
+<h2>Onay Bekleyen Randevular</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Ad Soyad</th>
+            <th>Email</th>
+            <th>Randevu Saati</th>
+            <th>Çalışan</th>
+            <th>Hizmet</th>
+            <th>Onay</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var appointment in Model)
+        {
+                <tr>
+                    <td>@appointment.FirstName @appointment.LastName</td>
+                    <td>@appointment.Email</td>
+                    <td>@appointment.RandevuSaati</td>
+                    <td>@appointment.EmployeeName</td>
+                    <td>@appointment.ServiceName</td>
+                    <td>
+                        <form asp-action="ApproveAppointment" method="post">
+                            <input type="hidden" name="appointmentId" value="@appointment.Id" />
+                            <button type="submit" class="btn btn-success">Onayla</button>
+                        </form>
+                    </td>
+                </tr>
+        }
+    </tbody>
+</table>

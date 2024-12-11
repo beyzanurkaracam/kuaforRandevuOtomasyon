@@ -48,6 +48,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/BEYZANUR/source/repos/kuaforBerberOtomasyon/kuaforBerberOtomasyon/Views/Admin/PendingAppointments.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUGVuZGluZ0FwcG9pbnRtZW50cy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/BEYZANUR/source/repos/kuaforBerberOtomasyon/kuaforBerberOtomasyon/Views/Admin/Randevu.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUmFuZGV2dS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/BEYZANUR/source/repos/kuaforBerberOtomasyon/kuaforBerberOtomasyon/Views/Admin/Service.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cU2VydmljZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -80,10 +88,6 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/BEYZANUR/source/repos/kuaforBerberOtomasyon/kuaforBerberOtomasyon/Views/Home/Randevu.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxSYW5kZXZ1LmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
 [C:/Users/BEYZANUR/source/repos/kuaforBerberOtomasyon/kuaforBerberOtomasyon/Views/Home/RandevuAl.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxSYW5kZXZ1QWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
@@ -98,6 +102,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/BEYZANUR/source/repos/kuaforBerberOtomasyon/kuaforBerberOtomasyon/Views/Home/Services.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxTZXJ2aWNlcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/BEYZANUR/source/repos/kuaforBerberOtomasyon/kuaforBerberOtomasyon/Views/Home/ViewAppointments.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxWaWV3QXBwb2ludG1lbnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/BEYZANUR/source/repos/kuaforBerberOtomasyon/kuaforBerberOtomasyon/Views/Shared/Error.cshtml]
