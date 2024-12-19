@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("kuaforBerberOtomasyon")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8e6aa5c1094eeb28c8932e3a23bf60d6729f9652")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1648c1c03c26cbcf0cee8135f9ca3d9b686600bc")]
 [assembly: System.Reflection.AssemblyProductAttribute("kuaforBerberOtomasyon")]
 [assembly: System.Reflection.AssemblyTitleAttribute("kuaforBerberOtomasyon")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
