@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "q4jGeGPwStt+2BN0/MK3RR298j4l3aBgZXgNPEWCPd0=",
+  "Hash": "7/HFCc1EfCB8BE4e6BZlg2cCrba9ULUXDXBoMRMxjHo=",
   "Source": "kuaforBerberOtomasyon",
   "BasePath": "_content/kuaforBerberOtomasyon",
   "Mode": "Default",
@@ -99,6 +99,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\favicon.ico"
+    },
+    {
+      "Identity": "C:\\Users\\BEYZANUR\\source\\repos\\kuaforBerberOtomasyon\\kuaforBerberOtomasyon\\wwwroot\\js\\AI.js",
+      "SourceId": "kuaforBerberOtomasyon",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\BEYZANUR\\source\\repos\\kuaforBerberOtomasyon\\kuaforBerberOtomasyon\\wwwroot\\",
+      "BasePath": "_content/kuaforBerberOtomasyon",
+      "RelativePath": "js/AI#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "3r8b2a0bt1",
+      "Integrity": "8ZRc1sGeVrPBx4lD717BgRaQekyh78QKV9SKsdt638U=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\AI.js"
     },
     {
       "Identity": "C:\\Users\\BEYZANUR\\source\\repos\\kuaforBerberOtomasyon\\kuaforBerberOtomasyon\\wwwroot\\js\\site.js",
@@ -1481,6 +1502,88 @@
         {
           "Name": "integrity",
           "Value": "sha256-Jtxf9L+5ITKRc1gIRl4VbUpGkRNfOBXjYTdhJD4facM="
+        }
+      ]
+    },
+    {
+      "Route": "js/AI.3r8b2a0bt1.js",
+      "AssetFile": "C:\\Users\\BEYZANUR\\source\\repos\\kuaforBerberOtomasyon\\kuaforBerberOtomasyon\\wwwroot\\js\\AI.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"8ZRc1sGeVrPBx4lD717BgRaQekyh78QKV9SKsdt638U=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 25 Dec 2024 16:55:23 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "3r8b2a0bt1"
+        },
+        {
+          "Name": "label",
+          "Value": "js/AI.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-8ZRc1sGeVrPBx4lD717BgRaQekyh78QKV9SKsdt638U="
+        }
+      ]
+    },
+    {
+      "Route": "js/AI.js",
+      "AssetFile": "C:\\Users\\BEYZANUR\\source\\repos\\kuaforBerberOtomasyon\\kuaforBerberOtomasyon\\wwwroot\\js\\AI.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"8ZRc1sGeVrPBx4lD717BgRaQekyh78QKV9SKsdt638U=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 25 Dec 2024 16:55:23 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-8ZRc1sGeVrPBx4lD717BgRaQekyh78QKV9SKsdt638U="
         }
       ]
     },

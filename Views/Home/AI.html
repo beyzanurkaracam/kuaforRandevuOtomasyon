@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hair Advice AI</title>
+    <link rel="stylesheet" href="hairAdviceAI.css"> <!-- CSS dosyasını doğru bağlayın -->
+</head>
+<body>
+    <div class="container">
+        <h1>Hair Advice AI</h1>
+
+        <!-- Saç modeli seçimi -->
+        <div>
+            <label for="hairstyle">Choose a Hairstyle:</label>
+            <select id="hairstyle"></select>
+        </div>
+
+        <!-- Saç rengi seçimi -->
+        <div>
+            <label for="color">Choose a Hair Color:</label>
+            <select id="color"></select>
+        </div>
+
+        <!-- Fotoğraf yükleme -->
+        <div>
+            <input type="file" id="fileInput" />
+        </div>
+
+        <!-- Tavsiye ve sonuç alanı -->
+        <div id="adviceSection" style="display: none; margin-top: 20px;">
+            <p id="selectedHairstyle"></p>
+            <p id="selectedColor"></p>
+            <img id="styleResultImage" alt="Styled Hair" style="max-width: 100%; height: auto;">
+        </div>
+    </div>
+
+    <script>
+     
+        const client = new GradioClient("Gradio-Blocks/HairCLIP");
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const hairstyles = [
+                'afro', 'bob cut', 'bowl cut', 'braid', 'caesar cut', 'chignon', 'cornrows', 'crew cut',
+                'crown braid', 'curtained hair', 'dido flip', 'dreadlocks', 'extensions', 'fade', 'fauxhawk',
+                'finger waves', 'french braid', 'frosted tips', 'full crown', 'harvard clip', 'high and tight',
+                'hime cut', 'hi-top fade', 'jewfro', 'jheri curl', 'liberty spikes', 'marcel waves', 'mohawk',
+                'pageboy', 'perm', 'pixie cut', 'psychobilly wedge', 'quiff', 'regular taper cut', 'ringlets',
+                'shingle bob', 'short hair', 'slicked-back', 'spiky hair', 'surfer hair', 'taper cut', 'the rachel',
+                'undercut', 'updo'
+            ];
+
+            const colors = [
+                'dark brown', 'black', 'red', 'yellow', 'blue', 'green', 'purple', 'pink', 'brown', 'orange'
+            ];
+
+            const hairstyleSelect = document.getElementById("hairstyle");
+            const colorSelect = document.getElementById("color");
+            const fileInput = document.getElementById("fileInput");
+            const adviceSection = document.getElementById("adviceSection");
+            const selectedHairstyle = document.getElementById("selectedHairstyle");
+            const selectedColor = document.getElementById("selectedColor");
+            const styleResultImage = document.getElementById("styleResultImage");
+
+            let selectedHairstyleValue = "afro"; // Varsayılan saç modeli
+            let selectedColorValue = "dark brown"; // Varsayılan renk
+
+            // Dropdownları doldur
+            hairstyles.forEach(hairstyle => {
+                const option = document.createElement("option");
+                option.value = hairstyle;
+                option.textContent = hairstyle;
+                hairstyleSelect.appendChild(option);
+            });
+
+            colors.forEach(color => {
+                const option = document.createElement("option");
+                option.value = color;
+                option.textContent = color;
+                colorSelect.appendChild(option);
+            });
+
+            // Seçim değişikliklerini yakala
+            hairstyleSelect.addEventListener("change", (event) => {
+                selectedHairstyleValue = event.target.value;
+            });
+
+            colorSelect.addEventListener("change", (event) => {
+                selectedColorValue = event.target.value;
+            });
+
+            fileInput.addEventListener("change", async (event) => {
+                const file = event.target.files[0];
+                if (!file) {
+                    console.error("No file selected.");
+                    return;
+                }
+
+                try {
+                    console.log(1)
+                    // GradioClient bağlantısı (Gradio kullanıyorsanız)
+                    const client = await GradioClient.connect("Gradio-Blocks/HairCLIP");
+                    console.log(2)
+
+                    const detectResult = await client.predict("/detect_and_align_face", {
+                        image: file,
+                    });
+                    console.log("Aligned Face:", detectResult.data);
+
+                    const reconstructResult = await client.predict("/reconstruct_face", {
+                        image: file,
+                    });
+                    console.log("Reconstruction Result:", reconstructResult.data[0].url);
+
+                    const styleResult = await client.predict("/generate", {
+                        editing_type: "both",
+                        hairstyle_index: selectedHairstyleValue,
+                        color_description: selectedColorValue,
+                    });
+                    console.log("Styled Hair:", styleResult.data);
+
+                    // Sonuçları göster
+                    adviceSection.style.display = "block";
+                    selectedHairstyle.textContent = `Selected Hairstyle: ${selectedHairstyleValue}`;
+                    selectedColor.textContent = `Selected Color: ${selectedColorValue}`;
+                    styleResultImage.src = styleResult.data[0].url;
+
+                } catch (error) {
+                    console.error("Error:", error);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "@gradio/client": "^1.8.0",
+    "eslint": "^9.17.0"
+  }
+}

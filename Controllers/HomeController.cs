@@ -10,6 +10,7 @@ using kuaforBerberOtomasyon.Models.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,7 @@ namespace kuaforBerberOtomasyon.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ILogger<HomeController> _logger;
         private readonly Context _context;
         private readonly HairCutRecommendationService _hairCutRecommendationService;
@@ -31,11 +33,12 @@ namespace kuaforBerberOtomasyon.Controllers
 
             _hairCutRecommendationService = new HairCutRecommendationService();
         }*/
-        public HomeController(ILogger<HomeController> logger, Context context)
+        public HomeController(ILogger<HomeController> logger, Context context, IWebHostEnvironment webHostEnvironment)
         {
             _logger = logger;
             _context = context;
-            
+            _webHostEnvironment = webHostEnvironment;
+
         }
 
         // Ana sayfa
@@ -485,23 +488,44 @@ namespace kuaforBerberOtomasyon.Controllers
             var aktifRandevular = _context.Appointments.Where(x => x.Email == User.Identity.Name).ToList(); // aktif kullanýcýnýn adýyla bir randevu var mý.
             return View(aktifRandevular);
         }
-       /* [HttpPost]
-        public async Task<IActionResult> GetHairCutRecommendation(string imagePath)
+        /* [HttpPost]
+         public async Task<IActionResult> GetHairCutRecommendation(string imagePath)
+         {
+             // Yüz þekli tespitini Azure Face API ile yapýyoruz
+             var faceShape = await _faceRecognitionService.GetFaceShape(imagePath);
+
+             // Yüz þekline göre öneri alýyoruz
+             if (faceShape.HasValue)
+             {
+                 var suggestion = _hairCutRecommendationService.GetSuggestion(faceShape.Value);
+                 return View("HairCutRecommendation", suggestion);
+             }
+
+             return View("Error", "Yüz þekli tespit edilemedi.");
+         }*/
+
+
+   
+        // Dummy methods for simulation
+        private Task<string> SimulateReconstruct(IFormFile file)
         {
-            // Yüz þekli tespitini Azure Face API ile yapýyoruz
-            var faceShape = await _faceRecognitionService.GetFaceShape(imagePath);
+            _logger.LogInformation("SimulateReconstruct called with file: {FileName}", file.FileName);
+            return Task.FromResult("https://dummyimage.com/600x400/000/fff");
+        }
 
-            // Yüz þekline göre öneri alýyoruz
-            if (faceShape.HasValue)
-            {
-                var suggestion = _hairCutRecommendationService.GetSuggestion(faceShape.Value);
-                return View("HairCutRecommendation", suggestion);
-            }
+        private Task<string> SimulateGenerate(string hairstyle, string color)
+        {
+            _logger.LogInformation("SimulateGenerate called with hairstyle: {Hairstyle}, color: {Color}", hairstyle, color);
+            return Task.FromResult($"https://dummyimage.com/600x400/aaa/000&text={hairstyle}+{color}");
+        }
 
-            return View("Error", "Yüz þekli tespit edilemedi.");
-        }*/
+        public IActionResult AI()
+        {
+            var filePath = Path.Combine(_webHostEnvironment.ContentRootPath, "Views", "Home", "AI.html");
+            var fileContent = System.IO.File.ReadAllText(filePath);
+            return View("AI", fileContent);
+        }
 
-        // Çýkýþ iþlemi
         public async Task<IActionResult> Logout()
         {
             _logger.LogInformation("Kullanýcý çýkýþ yaptý.");
