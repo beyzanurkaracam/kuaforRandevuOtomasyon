@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hair Advice AI</title>
-    <link rel="stylesheet" href="hairAdviceAI.css"> <!-- CSS dosyasını doğru bağlayın -->
+    
 </head>
 <body>
     <div class="container">
@@ -35,9 +35,26 @@
         </div>
     </div>
 
+
+    <script type="module">
+        import { Client } from "@gradio/client";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            console.log("Client imported:", Client);
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@gradio/client"></script>
     <script>
-     
-        const client = new GradioClient("Gradio-Blocks/HairCLIP");
+        document.addEventListener("DOMContentLoaded", async () => {
+            const client = new GradioClient("Gradio-Blocks/HairCLIP"); // Eğer CDN `GradioClient` olarak tanımlıyorsa
+            console.log(client);
+        });
+    </script>
+
+    <script>
+
+
 
         document.addEventListener("DOMContentLoaded", () => {
             const hairstyles = [
@@ -99,7 +116,7 @@
                 try {
                     console.log(1)
                     // GradioClient bağlantısı (Gradio kullanıyorsanız)
-                    const client = await GradioClient.connect("Gradio-Blocks/HairCLIP");
+                    const client = await Client.connect("Gradio-Blocks/HairCLIP");
                     console.log(2)
 
                     const detectResult = await client.predict("/detect_and_align_face", {
